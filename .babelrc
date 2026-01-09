@@ -1,0 +1,7 @@
+{
+    "presets":[
+        "@babel/preset-env"
+    ]
+}
+
+//giup viet dc cu phap moi or cu nhat cua js
