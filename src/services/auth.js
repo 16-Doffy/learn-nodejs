@@ -12,16 +12,20 @@ export const register = ({email, password}) => new Promise(async (resolve, rejec
                 password: hashPassword(password),
             }
         })
-        const token = response [1] ? jwt.sign({id : response[0].id, email: response[0].email, role_code:response[0].role_code}, process.env.JWT_SECRET, {expiresIn: '5d'}) : null  //ma hoa cac infor , dat limit token la 5day
+        const token = response[1] ? jwt.sign(
+            {
+                id: response[0].id, 
+                email: response[0].email, 
+                role_code: response[0].role_code || 'USER'
+            }, 
+            process.env.JWT_SECRET || 'default-secret-key', 
+            {expiresIn: '5d'}
+        ) : null;
+        
         resolve({
-            err: response[1] ?  0 : 1,
-            mes: response[1] ? 'register success' : 'email already exists'
-            ,'access_token' : `Bearer ${token}`
-        });
-
-        resolve({
-            err:0,
-            mes: 'register success'
+            err: response[1] ? 0 : 1,
+            mes: response[1] ? 'register success' : 'email already exists',
+            access_token: token ? `Bearer ${token}` : null
         });
     } catch (error) {
         reject(error);

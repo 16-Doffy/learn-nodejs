@@ -1,36 +1,30 @@
 import * as services from "../services";
+import { badRequest, internalServerError } from "../middleware/handle_errors";
+import { email, password } from "../helper/joi_schema";
+import joi from "joi";
 
 export const register = async (req, res) => {
     try {
-        const { email, password } = req.body
-        console.log(email, password)
-        if (!email || !password) return res.status(400).json({
-            err: 1,
-            mes: 'Missing payloads'
-        })
-        const response = await services.register({ email, password })
+        const { error, value } = joi.object({email, password}).validate(req.body);
+        if(error) return badRequest(error.details[0].message, res);
+        
+        const response = await services.register(value)
         return res.status(200).json(response);
     } catch (error) {
-        return res.status(500).json({
-            err: -1,
-            mes: 'Interal Server Error'
-        })
+        console.error('Register error:', error);
+        return internalServerError(res)
     }
 }
+
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body
-        console.log(email, password)
-        if (!email || !password) return res.status(400).json({
-            err: 1,
-            mes: 'Missing payloads'
-        })
-        const response = await services.login({ email, password })
+        const { error, value } = joi.object({email, password}).validate(req.body);
+        if(error) return badRequest(error.details[0].message, res);
+        
+        const response = await services.login(value)
         return res.status(200).json(response);
     } catch (error) {
-        return res.status(500).json({
-            err: -1,
-            mes: 'Interal Server Error'
-        })
+        console.error('Login error:', error);
+        return internalServerError(res)
     }
 }
